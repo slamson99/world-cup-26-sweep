@@ -17,9 +17,9 @@ export default function FixturesTab({ events, allocations }: FixturesTabProps) {
   const getAllocation = useMemo(() => {
     const map = new Map<string, { user: string; tier: number }>();
     allocations.forEach(alloc => {
-      map.set(normalizeTeamName(alloc.tier1_team), { user: alloc.user, tier: 1 });
-      map.set(normalizeTeamName(alloc.tier2_team), { user: alloc.user, tier: 2 });
-      map.set(normalizeTeamName(alloc.tier3_team), { user: alloc.user, tier: 3 });
+      map.set(normalizeTeamName(alloc.tier_1), { user: alloc.user, tier: 1 });
+      map.set(normalizeTeamName(alloc.tier_2), { user: alloc.user, tier: 2 });
+      map.set(normalizeTeamName(alloc.tier_3), { user: alloc.user, tier: 3 });
     });
     return (teamName: string) => map.get(normalizeTeamName(teamName)) || null;
   }, [allocations]);

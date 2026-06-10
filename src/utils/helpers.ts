@@ -1,24 +1,5 @@
 import { UserAllocation, ESPNEvent, TeamStats, UserStandings } from '../types';
 
-export const MOCK_USER_ALLOCATIONS: UserAllocation[] = [
-  { user: "John", tier1_team: "Argentina", tier2_team: "Japan", tier3_team: "Canada" },
-  { user: "Sarah", tier1_team: "France", tier2_team: "South Korea", tier3_team: "New Zealand" },
-  { user: "Mike", tier1_team: "Brazil", tier2_team: "Iran", tier3_team: "Saudi Arabia" },
-  { user: "Emily", tier1_team: "England", tier2_team: "Australia", tier3_team: "Qatar" },
-  { user: "David", tier1_team: "Spain", tier2_team: "Ecuador", tier3_team: "Panama" },
-  { user: "Jessica", tier1_team: "Germany", tier2_team: "Sweden", tier3_team: "South Africa" },
-  { user: "James", tier1_team: "Portugal", tier2_team: "Switzerland", tier3_team: "Iraq" },
-  { user: "Ashley", tier1_team: "Netherlands", tier2_team: "Austria", tier3_team: "Uzbekistan" },
-  { user: "Robert", tier1_team: "Belgium", tier2_team: "Czechia", tier3_team: "Jordan" },
-  { user: "Amanda", tier1_team: "Croatia", tier2_team: "Norway", tier3_team: "Haiti" },
-  { user: "Michael", tier1_team: "Morocco", tier2_team: "Scotland", tier3_team: "Cape Verde" },
-  { user: "Jennifer", tier1_team: "Uruguay", tier2_team: "Türkiye", tier3_team: "Congo DR" },
-  { user: "William", tier1_team: "Colombia", tier2_team: "Paraguay", tier3_team: "Curaçao" },
-  { user: "Taylor", tier1_team: "United States", tier2_team: "Ivory Coast", tier3_team: "Tunisia" },
-  { user: "Chris", tier1_team: "Mexico", tier2_team: "Egypt", tier3_team: "Bosnia-Herzegovina" },
-  { user: "Megan", tier1_team: "Senegal", tier2_team: "Algeria", tier3_team: "Ghana" }
-];
-
 export function normalizeTeamName(name: string): string {
   if (!name) return "";
   return name
@@ -274,14 +255,14 @@ export function computeUserStandings(
   teamStats: Record<string, TeamStats>
 ): UserStandings[] {
   const userStandings: UserStandings[] = allocations.map(alloc => {
-    const t1 = teamStats[normalizeTeamName(alloc.tier1_team)];
-    const t2 = teamStats[normalizeTeamName(alloc.tier2_team)];
-    const t3 = teamStats[normalizeTeamName(alloc.tier3_team)];
+    const t1 = teamStats[normalizeTeamName(alloc.tier_1)];
+    const t2 = teamStats[normalizeTeamName(alloc.tier_2)];
+    const t3 = teamStats[normalizeTeamName(alloc.tier_3)];
 
     // Fallbacks if stats aren't loaded or team name doesn't match
-    const stats1: TeamStats = t1 || { name: alloc.tier1_team, logo: "", abbreviation: "", mp: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, gd: 0, pts: 0, eliminated: false };
-    const stats2: TeamStats = t2 || { name: alloc.tier2_team, logo: "", abbreviation: "", mp: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, gd: 0, pts: 0, eliminated: false };
-    const stats3: TeamStats = t3 || { name: alloc.tier3_team, logo: "", abbreviation: "", mp: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, gd: 0, pts: 0, eliminated: false };
+    const stats1: TeamStats = t1 || { name: alloc.tier_1, logo: "", abbreviation: "", mp: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, gd: 0, pts: 0, eliminated: false };
+    const stats2: TeamStats = t2 || { name: alloc.tier_2, logo: "", abbreviation: "", mp: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, gd: 0, pts: 0, eliminated: false };
+    const stats3: TeamStats = t3 || { name: alloc.tier_3, logo: "", abbreviation: "", mp: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, gd: 0, pts: 0, eliminated: false };
 
     return {
       user: alloc.user,
