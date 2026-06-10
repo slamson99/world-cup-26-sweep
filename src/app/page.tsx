@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { ESPNEvent, UserAllocation, TeamStats, UserStandings } from '../types';
 import {
-  MOCK_USER_ALLOCATIONS,
   computeTeamStats,
   computeUserStandings
 } from '../utils/helpers';
@@ -14,7 +13,7 @@ import PayoutsTab from '../components/PayoutsTab';
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'fixtures' | 'standings' | 'payouts'>('standings');
   const [events, setEvents] = useState<ESPNEvent[]>([]);
-  const [allocations, setAllocations] = useState<UserAllocation[]>([]);
+  const [users, setUsers] = useState<UserAllocation[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -30,7 +29,6 @@ export default function Home() {
 
     try {
       // 1. Fetch ESPN Scoreboard data for the tournament duration
-      // FIFA World Cup 2026 starts June 11 and ends July 19, 2026
       const espnUrl = 'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates=20260611-20260719&limit=200';
       const espnRes = await fetch(espnUrl);
       if (!espnRes.ok) {
@@ -39,30 +37,24 @@ export default function Home() {
       const espnData = await espnRes.json();
       const fetchedEvents: ESPNEvent[] = espnData.events || [];
 
-      // 2. Fetch Google Sheets team allocation data if URL is configured
-      let fetchedAllocations: UserAllocation[] = [];
-      const sheetsUrl = process.env.NEXT_PUBLIC_GOOGLE_SHEETS_API_URL;
-      
-      if (sheetsUrl) {
-        try {
-          const sheetsRes = await fetch(sheetsUrl);
-          if (sheetsRes.ok) {
-            fetchedAllocations = await sheetsRes.json();
-          } else {
-            console.warn('Google Sheets API response was not OK, falling back to mock data.');
-          }
-        } catch (sheetErr) {
-          console.warn('Could not fetch Google Sheets API, falling back to mock data.', sheetErr);
-        }
+      // 2. Fetch Google Sheets team allocation data
+      const sheetsUrl = process.env.NEXT_PUBLIC_SHEET_API_URL;
+      if (!sheetsUrl) {
+        throw new Error('Google Sheets API URL (NEXT_PUBLIC_SHEET_API_URL) is not configured.');
       }
+      
+      const sheetsRes = await fetch(sheetsUrl);
+      if (!sheetsRes.ok) {
+        throw new Error(`Failed to fetch Google Sheets team allocations (Status: ${sheetsRes.status}).`);
+      }
+      const fetchedUsers = await sheetsRes.json();
 
-      // If no allocations fetched, use the predefined mock dataset
-      if (!fetchedAllocations || fetchedAllocations.length === 0) {
-        fetchedAllocations = MOCK_USER_ALLOCATIONS;
+      if (!fetchedUsers || fetchedUsers.length === 0) {
+        throw new Error('No team allocations returned from Google Sheets API.');
       }
 
       setEvents(fetchedEvents);
-      setAllocations(fetchedAllocations);
+      setUsers(fetchedUsers);
     } catch (err: any) {
       console.error(err);
       setError(err?.message || 'An error occurred while loading tournament data.');
@@ -79,15 +71,15 @@ export default function Home() {
   // Compute standings in real-time
   const { teamStats, standings } = React.useMemo(() => {
     const stats = computeTeamStats(events);
-    const userLeaderboard = computeUserStandings(allocations, stats);
+    const userLeaderboard = computeUserStandings(users, stats);
     return { teamStats: stats, standings: userLeaderboard };
-  }, [events, allocations]);
+  }, [events, users]);
 
   // Render the selected tab component
   const renderTabContent = () => {
     switch (activeTab) {
       case 'fixtures':
-        return <FixturesTab events={events} allocations={allocations} />;
+        return <FixturesTab events={events} allocations={users} />;
       case 'standings':
         return <StandingsTab standings={standings} />;
       case 'payouts':
@@ -100,14 +92,12 @@ export default function Home() {
   if (loading) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center bg-gradient-to-br from-midnight-blue to-pitch-green text-white p-6">
-        <div className="relative flex items-center justify-center mb-6">
-          <div className="w-16 h-16 border-4 border-trophy-gold/20 border-t-trophy-gold rounded-full animate-spin"></div>
-          <span className="absolute text-2xl animate-pulse">⚽</span>
+        <div className="relative flex flex-col items-center justify-center mb-6">
+          <div className="w-16 h-16 border-4 border-trophy-gold/20 border-t-trophy-gold rounded-full animate-spin mb-4"></div>
+          <div className="loading-spinner text-lg font-bold tracking-wider text-trophy-gold animate-pulse">
+            Loading live sweepstakes data...
+          </div>
         </div>
-        <h1 className="text-xl font-bold tracking-wider text-trophy-gold animate-pulse">
-          LOADING WORLD CUP 2026 SWEEP...
-        </h1>
-        <p className="text-xs text-white/50 mt-2">Fetching live fixtures, scores, and standings</p>
       </div>
     );
   }

@@ -1,8 +1,8 @@
 export interface UserAllocation {
   user: string;
-  tier1_team: string;
-  tier2_team: string;
-  tier3_team: string;
+  tier_1: string;
+  tier_2: string;
+  tier_3: string;
 }
 
 export interface ESPNTeam {
