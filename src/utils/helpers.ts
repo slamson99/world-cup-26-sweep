@@ -1,4 +1,5 @@
 import { UserAllocation, ESPNEvent, TeamStats, UserStandings } from '../types';
+import { TEAM_METADATA, TeamMeta } from './teamMetadata';
 
 export function normalizeTeamName(name: string): string {
   if (!name) return "";
@@ -336,3 +337,9 @@ export function computeUserStandings(
 
   return userStandings;
 }
+
+export function getTeamMetadata(teamName: string): TeamMeta | null {
+  const norm = normalizeTeamName(teamName);
+  return TEAM_METADATA[norm] || null;
+}
+
