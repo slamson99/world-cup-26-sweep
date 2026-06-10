@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@theme {
+  --color-pitch-green: #0A3B28;
+  --color-midnight-blue: #0D1B2A;
+  --color-trophy-gold: #D4AF37;
+}
+
+:root {
+  --background: #0D1B2A;
+  --foreground: #ffffff;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
