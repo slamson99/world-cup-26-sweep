@@ -96,4 +96,7 @@ export interface UserStandings {
   totalPts: number;
   totalGD: number;
   totalGF: number;
+  totalW: number;
+  totalD: number;
+  totalL: number;
 }

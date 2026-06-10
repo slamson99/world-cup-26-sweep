@@ -85,18 +85,17 @@ export default function FixturesTab({ events, allocations }: FixturesTabProps) {
   const getStatusDisplay = (event: ESPNEvent) => {
     const state = event.status?.type?.state;
     const isCompleted = event.status?.type?.completed;
-    const detail = event.status?.type?.detail || '';
 
     if (isCompleted || state === 'post') {
       return (
-        <span className="px-2 py-0.5 text-xs font-semibold rounded bg-white/10 text-white/60">
+        <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-white/10 text-white/60 uppercase">
           FT
         </span>
       );
     }
     if (state === 'in') {
       return (
-        <span className="px-2 py-0.5 text-xs font-semibold rounded bg-red-500/80 text-white animate-pulse border border-red-500">
+        <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-red-500/80 text-white animate-pulse border border-red-500 uppercase">
           LIVE
         </span>
       );
@@ -104,7 +103,7 @@ export default function FixturesTab({ events, allocations }: FixturesTabProps) {
     // Scheduled/Upcoming
     const { kickoffTime } = formatToAEST(event.date);
     return (
-      <span className="px-2 py-0.5 text-xs font-semibold rounded bg-trophy-gold/20 text-trophy-gold border border-trophy-gold/30">
+      <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-trophy-gold/20 text-trophy-gold border border-trophy-gold/30">
         {kickoffTime}
       </span>
     );
@@ -113,7 +112,7 @@ export default function FixturesTab({ events, allocations }: FixturesTabProps) {
   return (
     <div className="flex flex-col h-full">
       {/* Filters & Search Header */}
-      <div className="p-4 bg-black/20 backdrop-blur-md border-b border-white/10 sticky top-0 z-10 flex flex-col md:flex-row gap-3 items-center justify-between">
+      <div className="p-4 bg-black/20 backdrop-blur-md border-b border-white/10 sticky top-0 z-10 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         {/* Search */}
         <div className="relative w-full md:w-72">
           <input
@@ -121,12 +120,12 @@ export default function FixturesTab({ events, allocations }: FixturesTabProps) {
             placeholder="Search teams or players..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-full px-4 py-2 text-sm text-white focus:outline-none focus:border-trophy-gold transition-colors placeholder-white/30"
+            className="w-full bg-white/5 border border-white/10 rounded-full px-4 py-2 text-xs md:text-sm text-white focus:outline-none focus:border-trophy-gold transition-colors placeholder-white/30"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white text-xs"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white text-xs cursor-pointer"
             >
               ✕
             </button>
@@ -139,9 +138,9 @@ export default function FixturesTab({ events, allocations }: FixturesTabProps) {
             <button
               key={filter}
               onClick={() => setActiveFilter(filter)}
-              className={`flex-1 md:flex-initial px-4 py-1.5 rounded-full text-xs font-medium uppercase tracking-wider transition-all cursor-pointer ${
+              className={`flex-1 md:flex-initial px-4 py-1.5 rounded-full text-[10px] md:text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer ${
                 activeFilter === filter
-                  ? 'bg-trophy-gold text-black shadow-md font-bold'
+                  ? 'bg-trophy-gold text-black shadow-md font-extrabold'
                   : 'text-white/60 hover:text-white hover:bg-white/5'
               }`}
             >
@@ -152,7 +151,7 @@ export default function FixturesTab({ events, allocations }: FixturesTabProps) {
       </div>
 
       {/* Fixtures List */}
-      <div className="flex-1 overflow-y-auto px-4 pb-24 pt-4">
+      <div className="flex-1 overflow-y-auto px-4 pb-28 pt-2">
         {groupedFixtures.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-white/40">
             <span className="text-4xl mb-2">⚽</span>
@@ -160,16 +159,16 @@ export default function FixturesTab({ events, allocations }: FixturesTabProps) {
           </div>
         ) : (
           groupedFixtures.map((group) => (
-            <div key={group.sortDateStr} className="mb-6">
-              {/* Sticky Date Header */}
-              <div className="sticky top-[73px] md:top-[65px] bg-pitch-green py-2 z-5">
-                <h3 className="text-sm font-semibold tracking-wider text-trophy-gold/90 uppercase border-b border-trophy-gold/20 pb-1 inline-block">
+            <div key={group.sortDateStr} className="mb-4">
+              {/* Sticky Date Header - Using Pitch Green backdrop-blur */}
+              <div className="sticky top-[108px] md:top-[69px] bg-[#0A2620]/90 backdrop-blur-md py-1.5 z-5 border-b border-white/5 mb-2">
+                <h3 className="text-xs font-bold tracking-wider text-trophy-gold/90 uppercase inline-block">
                   {group.dateHeader}
                 </h3>
               </div>
 
               {/* Day's Matches */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {group.matches.map((event) => {
                   const competitors = event.competitions?.[0]?.competitors || [];
                   const home = competitors.find(c => c.homeAway === 'home');
@@ -186,49 +185,50 @@ export default function FixturesTab({ events, allocations }: FixturesTabProps) {
                   return (
                     <div
                       key={event.id}
-                      className={`relative overflow-hidden rounded-xl border p-4 transition-all bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/10 flex flex-col justify-between ${
+                      className={`relative overflow-hidden rounded-xl border p-3.5 transition-all bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/10 flex flex-col justify-between ${
                         isLive ? 'ring-1 ring-red-500/50 bg-red-500/5 border-red-500/30' : ''
                       }`}
                     >
                       {/* Top Row: Stage & Status */}
-                      <div className="flex justify-between items-center mb-4 border-b border-white/5 pb-2">
-                        <span className="text-[10px] uppercase tracking-widest text-white/40 font-mono">
+                      <div className="flex justify-between items-center mb-3 border-b border-white/5 pb-1.5">
+                        <span className="text-[9px] uppercase tracking-widest text-white/40 font-mono truncate max-w-[70%]">
                           {event.season?.slug?.replace(/-/g, ' ')}
                         </span>
                         {getStatusDisplay(event)}
                       </div>
 
                       {/* Middle Row: The Match details */}
-                      <div className="grid grid-cols-7 items-center justify-center text-center gap-1 mb-2">
+                      <div className="grid grid-cols-7 items-center justify-center text-center gap-0.5">
+                        
                         {/* Home Country */}
-                        <div className="col-span-3 flex flex-col items-center">
+                        <div className="col-span-3 flex flex-col items-center min-w-0">
                           {home.team?.logo ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img
                               src={home.team.logo}
                               alt={home.team.displayName}
-                              className="w-10 h-10 object-contain shadow-md mb-2 filter drop-shadow-md"
+                              className="w-8 h-8 object-contain shadow-md mb-1.5 filter drop-shadow-md"
                             />
                           ) : (
-                            <div className="w-10 h-10 rounded bg-white/5 flex items-center justify-center text-lg mb-2">🏳️</div>
+                            <div className="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-sm mb-1.5">🏳️</div>
                           )}
-                          <span className="text-sm font-semibold truncate max-w-full text-white">
+                          <span className="text-xs md:text-sm font-semibold truncate w-full text-white px-1">
                             {home.team?.displayName}
                           </span>
                           
                           {/* Sweep Allocation badge */}
                           {homeAlloc ? (
-                            <span className={`mt-1 text-[10px] px-2 py-0.5 rounded-full font-medium tracking-wide ${
+                            <span className={`mt-1 text-[9px] px-1.5 py-0.5 rounded-full font-bold tracking-wide truncate max-w-full ${
                               homeAlloc.tier === 1 ? 'bg-trophy-gold/20 text-trophy-gold border border-trophy-gold/30' :
                               homeAlloc.tier === 2 ? 'bg-blue-400/20 text-blue-300 border border-blue-400/20' :
                               'bg-green-400/20 text-green-300 border border-green-400/20'
                             }`}>
-                              {homeAlloc.user} <span className="opacity-60 text-[8px]">T{homeAlloc.tier}</span>
+                              {homeAlloc.user} <span className="opacity-60 text-[7px]">T{homeAlloc.tier}</span>
                             </span>
                           ) : (
                             !isPlaceholder(home.team?.displayName) && (
-                              <span className="mt-1 text-[9px] px-2 py-0.5 rounded-full bg-white/5 text-white/40">
-                                Unallocated
+                              <span className="mt-1 text-[8px] px-1.5 py-0.5 rounded-full bg-white/5 text-white/30 truncate max-w-full">
+                                Unassigned
                               </span>
                             )
                           )}
@@ -237,51 +237,51 @@ export default function FixturesTab({ events, allocations }: FixturesTabProps) {
                         {/* Scores / VS */}
                         <div className="col-span-1 flex flex-col justify-center items-center">
                           {(isLive || isCompleted) ? (
-                            <div className="flex items-center justify-center gap-1.5">
-                              <span className={`text-xl font-bold font-mono tracking-tight ${isLive ? 'text-red-400' : 'text-white'}`}>
+                            <div className="flex items-center justify-center gap-1">
+                              <span className={`text-lg font-bold font-mono tracking-tight ${isLive ? 'text-red-400' : 'text-white'}`}>
                                 {home.score}
                               </span>
-                              <span className="text-white/40 text-xs">-</span>
-                              <span className={`text-xl font-bold font-mono tracking-tight ${isLive ? 'text-red-400' : 'text-white'}`}>
+                              <span className="text-white/30 text-[10px]">-</span>
+                              <span className={`text-lg font-bold font-mono tracking-tight ${isLive ? 'text-red-400' : 'text-white'}`}>
                                 {away.score}
                               </span>
                             </div>
                           ) : (
-                            <span className="text-xs font-semibold text-white/30 uppercase tracking-widest">
+                            <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">
                               VS
                             </span>
                           )}
                         </div>
 
                         {/* Away Country */}
-                        <div className="col-span-3 flex flex-col items-center">
+                        <div className="col-span-3 flex flex-col items-center min-w-0">
                           {away.team?.logo ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img
                               src={away.team.logo}
                               alt={away.team.displayName}
-                              className="w-10 h-10 object-contain shadow-md mb-2 filter drop-shadow-md"
+                              className="w-8 h-8 object-contain shadow-md mb-1.5 filter drop-shadow-md"
                             />
                           ) : (
-                            <div className="w-10 h-10 rounded bg-white/5 flex items-center justify-center text-lg mb-2">🏳️</div>
+                            <div className="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-sm mb-1.5">🏳️</div>
                           )}
-                          <span className="text-sm font-semibold truncate max-w-full text-white">
+                          <span className="text-xs md:text-sm font-semibold truncate w-full text-white px-1">
                             {away.team?.displayName}
                           </span>
 
                           {/* Sweep Allocation badge */}
                           {awayAlloc ? (
-                            <span className={`mt-1 text-[10px] px-2 py-0.5 rounded-full font-medium tracking-wide ${
+                            <span className={`mt-1 text-[9px] px-1.5 py-0.5 rounded-full font-bold tracking-wide truncate max-w-full ${
                               awayAlloc.tier === 1 ? 'bg-trophy-gold/20 text-trophy-gold border border-trophy-gold/30' :
                               awayAlloc.tier === 2 ? 'bg-blue-400/20 text-blue-300 border border-blue-400/20' :
                               'bg-green-400/20 text-green-300 border border-green-400/20'
                             }`}>
-                              {awayAlloc.user} <span className="opacity-60 text-[8px]">T{awayAlloc.tier}</span>
+                              {awayAlloc.user} <span className="opacity-60 text-[7px]">T{awayAlloc.tier}</span>
                             </span>
                           ) : (
                             !isPlaceholder(away.team?.displayName) && (
-                              <span className="mt-1 text-[9px] px-2 py-0.5 rounded-full bg-white/5 text-white/40">
-                                Unallocated
+                              <span className="mt-1 text-[8px] px-1.5 py-0.5 rounded-full bg-white/5 text-white/30 truncate max-w-full">
+                                Unassigned
                               </span>
                             )
                           )}
@@ -290,7 +290,7 @@ export default function FixturesTab({ events, allocations }: FixturesTabProps) {
 
                       {/* Detail Text (Venue or Live Detail) */}
                       {isLive && event.status?.type?.detail && (
-                        <div className="mt-2 text-center text-[10px] text-red-400 font-medium animate-pulse">
+                        <div className="mt-1.5 text-center text-[9px] text-red-400 font-bold animate-pulse">
                           {event.status.type.detail}
                         </div>
                       )}

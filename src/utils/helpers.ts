@@ -63,44 +63,78 @@ export function getTeamTier(teamName: string): number {
 }
 
 export function formatToAEST(dateStr: string) {
-  const date = new Date(dateStr);
-  
-  // Format in Australia/Sydney (AEST)
-  const optionsDate = { timeZone: 'Australia/Sydney', weekday: 'long', month: 'long', day: 'numeric' } as const;
-  const optionsTime = { timeZone: 'Australia/Sydney', hour: 'numeric', minute: '2-digit', hour12: true } as const;
-  
-  const datePartsFormatter = new Intl.DateTimeFormat('en-US', optionsDate);
-  const timeFormatter = new Intl.DateTimeFormat('en-US', optionsTime);
-  
-  const formattedTime = timeFormatter.format(date);
-  const parts = datePartsFormatter.formatToParts(date);
-  
-  let weekday = '';
-  let month = '';
-  let dayNum = '';
-  for (const part of parts) {
-    if (part.type === 'weekday') weekday = part.value;
-    if (part.type === 'month') month = part.value;
-    if (part.type === 'day') dayNum = part.value;
+  if (!dateStr) {
+    return {
+      dateHeader: "Date TBC",
+      kickoffTime: "TBC",
+      sortDateStr: "9999-99-99"
+    };
   }
-  
-  const day = parseInt(dayNum);
-  let suffix = 'th';
-  if (day === 1 || day === 21 || day === 31) suffix = 'st';
-  else if (day === 2 || day === 22) suffix = 'nd';
-  else if (day === 3 || day === 23) suffix = 'rd';
-  
-  const dateHeader = `${weekday}, ${month} ${day}${suffix}`;
-  
-  // Create stable sort key "YYYY-MM-DD" in Sydney timezone
-  const yearStr = new Intl.DateTimeFormat('en-US', { timeZone: 'Australia/Sydney', year: 'numeric' }).format(date);
-  const monthStr = new Intl.DateTimeFormat('en-US', { timeZone: 'Australia/Sydney', month: '2-digit' }).format(date);
-  const dayStr = new Intl.DateTimeFormat('en-US', { timeZone: 'Australia/Sydney', day: '2-digit' }).format(date);
-  const sortDateStr = `${yearStr}-${monthStr}-${dayStr}`;
+
+  // Robust parsing: if the time zone is missing entirely, treat it as UTC by appending 'Z'
+  let normalizedStr = dateStr;
+  if (dateStr.includes('T') && !dateStr.endsWith('Z') && !/[+-]\d{2}:\d{2}$/.test(dateStr)) {
+    normalizedStr += 'Z';
+  }
+
+  const date = new Date(normalizedStr);
+  if (isNaN(date.getTime())) {
+    return {
+      dateHeader: "Date TBC",
+      kickoffTime: "TBC",
+      sortDateStr: "9999-99-99"
+    };
+  }
+
+  // Force Australia/Melbourne (AEST) timezone explicitly
+  const optionsDate = { timeZone: 'Australia/Melbourne', weekday: 'long', month: 'long', day: 'numeric' } as const;
+  const optionsTime = { timeZone: 'Australia/Melbourne', hour: 'numeric', minute: '2-digit', hour12: true } as const;
+
+  let dateHeader = "";
+  let kickoffTime = "";
+  let sortDateStr = "";
+
+  try {
+    kickoffTime = new Intl.DateTimeFormat('en-US', optionsTime).format(date);
+    const parts = new Intl.DateTimeFormat('en-US', optionsDate).formatToParts(date);
+
+    let weekday = '';
+    let month = '';
+    let dayNum = '';
+    for (const part of parts) {
+      if (part.type === 'weekday') weekday = part.value;
+      if (part.type === 'month') month = part.value;
+      if (part.type === 'day') dayNum = part.value;
+    }
+
+    const day = parseInt(dayNum);
+    let suffix = 'th';
+    if (day === 1 || day === 21 || day === 31) suffix = 'st';
+    else if (day === 2 || day === 22) suffix = 'nd';
+    else if (day === 3 || day === 23) suffix = 'rd';
+
+    dateHeader = `${weekday}, ${month} ${day}${suffix}`;
+    
+    // Create stable sort key "YYYY-MM-DD" in Melbourne timezone
+    const yearStr = new Intl.DateTimeFormat('en-US', { timeZone: 'Australia/Melbourne', year: 'numeric' }).format(date);
+    const monthStr = new Intl.DateTimeFormat('en-US', { timeZone: 'Australia/Melbourne', month: '2-digit' }).format(date);
+    const dayStr = new Intl.DateTimeFormat('en-US', { timeZone: 'Australia/Melbourne', day: '2-digit' }).format(date);
+    sortDateStr = `${yearStr}-${monthStr}-${dayStr}`;
+  } catch (err) {
+    dateHeader = "Date TBC";
+    kickoffTime = "TBC";
+    sortDateStr = "9999-99-99";
+  }
+
+  // Detect unconfirmed or placeholder times (e.g. T00:00:00Z or T00:00Z or no time component)
+  const isPlaceholderTime = dateStr.includes('T00:00') || !dateStr.includes('T');
+  if (isPlaceholderTime) {
+    kickoffTime = "TBC";
+  }
 
   return {
     dateHeader,
-    kickoffTime: formattedTime,
+    kickoffTime,
     sortDateStr
   };
 }
@@ -277,7 +311,10 @@ export function computeUserStandings(
       teams: [stats1, stats2, stats3],
       totalPts: stats1.pts + stats2.pts + stats3.pts,
       totalGD: stats1.gd + stats2.gd + stats3.gd,
-      totalGF: stats1.gf + stats2.gf + stats3.gf
+      totalGF: stats1.gf + stats2.gf + stats3.gf,
+      totalW: stats1.w + stats2.w + stats3.w,
+      totalD: stats1.d + stats2.d + stats3.d,
+      totalL: stats1.l + stats2.l + stats3.l
     };
   });
 
