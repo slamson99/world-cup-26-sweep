@@ -2,7 +2,7 @@ import { UserAllocation, ESPNEvent, TeamStats, UserStandings } from '../types';
 
 export function normalizeTeamName(name: string): string {
   if (!name) return "";
-  return name
+  const norm = name
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "") // remove accents
@@ -12,6 +12,13 @@ export function normalizeTeamName(name: string): string {
     .replace("turkey", "turkiye")
     .replace("southkorearepublic", "southkorea")
     .replace("korearepublic", "southkorea");
+
+  if (norm === "bosniaandherzegovina") return "bosniaherzegovina";
+  if (norm === "czechrepublic") return "czechia";
+  if (norm === "drcongo") return "congodr";
+  if (norm === "democraticrepublicofcongo") return "congodr";
+
+  return norm;
 }
 
 export function isPlaceholder(name: string): boolean {
