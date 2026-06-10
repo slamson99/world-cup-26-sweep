@@ -8,10 +8,11 @@ import {
 } from '../utils/helpers';
 import FixturesTab from '../components/FixturesTab';
 import StandingsTab from '../components/StandingsTab';
+import KnockoutBracket from '../components/KnockoutBracket';
 import PayoutsTab from '../components/PayoutsTab';
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<'fixtures' | 'standings' | 'payouts'>('standings');
+  const [activeTab, setActiveTab] = useState<'fixtures' | 'standings' | 'bracket' | 'payouts'>('standings');
   const [events, setEvents] = useState<ESPNEvent[]>([]);
   const [users, setUsers] = useState<UserAllocation[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -82,6 +83,8 @@ export default function Home() {
         return <FixturesTab events={events} allocations={users} />;
       case 'standings':
         return <StandingsTab standings={standings} />;
+      case 'bracket':
+        return <KnockoutBracket events={events} allocations={users} teamStats={teamStats} />;
       case 'payouts':
         return <PayoutsTab standings={standings} />;
       default:
@@ -182,7 +185,20 @@ export default function Home() {
           <span className="text-[10px] tracking-wider uppercase font-semibold mt-0.5">Leaderboard</span>
         </button>
 
-        {/* Tab 3: Payouts */}
+        {/* Tab 3: Bracket */}
+        <button
+          onClick={() => setActiveTab('bracket')}
+          className={`flex-1 flex flex-col items-center justify-center py-1.5 rounded-full transition-all cursor-pointer ${
+            activeTab === 'bracket'
+              ? 'text-trophy-gold font-bold bg-white/5 scale-105'
+              : 'text-white/50 hover:text-white'
+          }`}
+        >
+          <span className="text-lg">🏅</span>
+          <span className="text-[10px] tracking-wider uppercase font-semibold mt-0.5">Bracket</span>
+        </button>
+
+        {/* Tab 4: Payouts */}
         <button
           onClick={() => setActiveTab('payouts')}
           className={`flex-1 flex flex-col items-center justify-center py-1.5 rounded-full transition-all cursor-pointer ${
