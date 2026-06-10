@@ -41,7 +41,7 @@ export default function Home() {
 
       // 2. Fetch Google Sheets team allocation data if URL is configured
       let fetchedAllocations: UserAllocation[] = [];
-      const sheetsUrl = process.env.NEXT_PUBLIC_GOOGLE_SHEETS_API_URL;
+      const sheetsUrl = process.env.NEXT_PUBLIC_SHEET_API_URL;
       
       if (sheetsUrl) {
         try {
