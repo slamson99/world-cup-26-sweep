@@ -159,16 +159,16 @@ export default function FixturesTab({ events, allocations }: FixturesTabProps) {
           </div>
         ) : (
           groupedFixtures.map((group) => (
-            <div key={group.sortDateStr} className="mb-4">
-              {/* Sticky Date Header - Using Pitch Green backdrop-blur */}
-              <div className="sticky top-[108px] md:top-[69px] bg-[#0A2620]/90 backdrop-blur-md py-1.5 z-5 border-b border-white/5 mb-2">
+            <div key={group.sortDateStr} className="flex flex-col gap-3 mb-6">
+              {/* Sticky Date Header - Solid opaque background, z-20, and padding */}
+              <div className="sticky top-[108px] md:top-[69px] bg-[#0B251E] py-2.5 px-3.5 z-20 border-b border-white/10 rounded-xl shadow-md mb-2">
                 <h3 className="text-xs font-bold tracking-wider text-trophy-gold/90 uppercase inline-block">
                   {group.dateHeader}
                 </h3>
               </div>
 
               {/* Day's Matches */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {group.matches.map((event) => {
                   const competitors = event.competitions?.[0]?.competitors || [];
                   const home = competitors.find(c => c.homeAway === 'home');
